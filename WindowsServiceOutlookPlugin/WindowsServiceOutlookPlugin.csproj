@@ -70,7 +70,13 @@
     <Compile Include="Persistence\AppoinntmentSite.cs" />
     <Compile Include="Persistence\Appointment.cs" />
     <Compile Include="Persistence\Migrations\201712151252232_InitialDb.cs" />
+    <Compile Include="Persistence\Migrations\201712151252232_InitialDb.Designer.cs">
+      <DependentUpon>201712151252232_InitialDb.cs</DependentUpon>
+    </Compile>
     <Compile Include="Persistence\Migrations\201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.cs" />
+    <Compile Include="Persistence\Migrations\201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.Designer.cs">
+      <DependentUpon>201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.cs</DependentUpon>
+    </Compile>
     <Compile Include="Persistence\Migrations\Configuration.cs" />
     <Compile Include="Persistence\OutlookContextInterface.cs" />
     <Compile Include="Persistence\OutlookDbMs.cs" />
@@ -87,6 +93,14 @@
     <Compile Include="Services\IOutlookOnlineController.cs" />
     <Compile Include="Services\OutlookOnlineController.cs" />
     <Compile Include="Services\OutlookOnlineController_Fake.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Persistence\Migrations\201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.resx">
+      <DependentUpon>201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\Migrations\201712151252232_InitialDb.resx">
+      <DependentUpon>201712151252232_InitialDb.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
