@@ -5,19 +5,57 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsServiceOutlookPlugin", "WindowsServiceOutlookPlugin\WindowsServiceOutlookPlugin.csproj", "{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{E71B0C6D-968B-4FBB-8C45-1D22D8710630}"
+	ProjectSection(SolutionItems) = preProject
+		CodeCoverage.runsettings = CodeCoverage.runsettings
+		TestSettings.runsettings = TestSettings.runsettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{8ACAECA0-93F8-4785-9970-C7A9D14AFA80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrotingOutlook.Integration.Tests", "MicrotingOutlook.Integration.Tests\MicrotingOutlook.Integration.Tests.csproj", "{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrotingOutlook.Tests", "MicrotingOutlook.Tests\MicrotingOutlook.Tests.csproj", "{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Debug|x64.Build.0 = Debug|Any CPU
 		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5B13BA1-AA9E-4DF9-850A-B6654429DE17}.Release|x64.Build.0 = Release|Any CPU
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Debug|x64.ActiveCfg = Debug|x64
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Debug|x64.Build.0 = Debug|x64
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Release|x64.ActiveCfg = Release|x64
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1}.Release|x64.Build.0 = Release|x64
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Debug|x64.ActiveCfg = Debug|x64
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Debug|x64.Build.0 = Debug|x64
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Release|x64.ActiveCfg = Release|x64
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{00FC3C77-FE0C-432A-8C7D-8AE57F383AF1} = {8ACAECA0-93F8-4785-9970-C7A9D14AFA80}
+		{AD7F8F2A-7916-4F95-9857-47891AF8EDBD} = {8ACAECA0-93F8-4785-9970-C7A9D14AFA80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09D7958E-954E-453F-AF01-FA2D17E0DF16}

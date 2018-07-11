@@ -40,7 +40,64 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.cs" />
+    <Compile Include="Handlers\AppointmentCreatedInOutlookHandler.cs" />
+    <Compile Include="Handlers\AppointmentDeletedInOutlookHandler.cs" />
+    <Compile Include="Handlers\AppointmentMovedInOutlookHandler.cs" />
+    <Compile Include="Handlers\ConvertRecurringEventToSingleEventHandler.cs" />
+    <Compile Include="Handlers\EformCompletedHandler.cs" />
+    <Compile Include="Handlers\EformParsedByServerHandler.cs" />
+    <Compile Include="Handlers\EformParsingErrorHandler.cs" />
+    <Compile Include="Handlers\EformRetrievedHandler.cs" />
+    <Compile Include="Handlers\ParseOutlookItemsHandler.cs" />
+    <Compile Include="Installers\RebusHandlerInstaller.cs" />
+    <Compile Include="Installers\RebusInstaller.cs" />
+    <Compile Include="Messages\AppointmentCreatedInOutlook.cs" />
+    <Compile Include="Messages\AppointmentDeletedInOutlook.cs" />
+    <Compile Include="Messages\AppointmentMovedInOutlook.cs" />
+    <Compile Include="Messages\ConvertRecurringEventToSingleEvent.cs" />
+    <Compile Include="Messages\EformCompleted.cs" />
+    <Compile Include="Messages\EformParsedByServer.cs" />
+    <Compile Include="Messages\EformParsingError.cs" />
+    <Compile Include="Messages\EformRetrieved.cs" />
+    <Compile Include="Messages\ParseOutlookItem.cs" />
+    <Compile Include="OfficeApi\Calendar.cs" />
+    <Compile Include="OfficeApi\EmailAddress.cs" />
+    <Compile Include="OfficeApi\Error.cs" />
+    <Compile Include="OfficeApi\Event.cs" />
+    <Compile Include="OfficeApi\ItemCollection.cs" />
+    <Compile Include="OfficeApi\OutlookExchangeOnlineAPIClient.cs" />
+    <Compile Include="Persistence\AppoinntmentSite.cs" />
+    <Compile Include="Persistence\Appointment.cs" />
+    <Compile Include="Persistence\Migrations\201712151252232_InitialDb.cs" />
+    <Compile Include="Persistence\Migrations\201803270844522_ChangingMicrotingUidToSdkCaseIdOnAppointmentSites.cs" />
+    <Compile Include="Persistence\Migrations\Configuration.cs" />
+    <Compile Include="Persistence\OutlookContextInterface.cs" />
+    <Compile Include="Persistence\OutlookDbMs.cs" />
+    <Compile Include="Persistence\OutlookDbMy.cs" />
+    <Compile Include="Persistence\SqlController.cs" />
+    <Compile Include="Persistence\table\appointments.cs" />
+    <Compile Include="Persistence\table\appointment_sites.cs" />
+    <Compile Include="Persistence\table\appointment_site_versions.cs" />
+    <Compile Include="Persistence\table\appointment_versions.cs" />
+    <Compile Include="Persistence\table\logs.cs" />
+    <Compile Include="Persistence\table\log_exceptions.cs" />
+    <Compile Include="Persistence\table\settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IOutlookOnlineController.cs" />
+    <Compile Include="Services\OutlookOnlineController.cs" />
+    <Compile Include="Services\OutlookOnlineController_Fake.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
+      <Version>3.19.8</Version>
+    </PackageReference>
+    <PackageReference Include="Microting.eForm">
+      <Version>2.1.298</Version>
+    </PackageReference>
+    <PackageReference Include="Microting.WindowsService.BasePn">
+      <Version>1.1.7</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
