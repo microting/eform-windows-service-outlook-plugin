@@ -444,12 +444,18 @@ namespace WindowsServiceOutlookPlugin
 
         public void eFormRetrived(object sender, EventArgs args)
         {
-            throw new NotImplementedException();
+            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+
+            string CaseId = trigger.CaseId.ToString();
+            MarkAppointmentRetrived(CaseId);
         }
 
         public void CaseCompleted(object sender, EventArgs args)
         {
-            throw new NotImplementedException();
+            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+
+            string CaseId = trigger.CaseId.ToString();
+            MarkAppointmentCompleted(CaseId);
         }
 
         public void CaseDeleted(object sender, EventArgs args)
