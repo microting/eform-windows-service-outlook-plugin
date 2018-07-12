@@ -22,12 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-//using OutlookOffice;
 using OutlookSql;
-using eFormShared;
 
 using System;
-using System.Linq;
 using System.Threading;
 using OutlookOfficeOnline;
 using OutlookExchangeOnlineAPI;
@@ -36,10 +33,14 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Microting.OutlookAddon.Installers;
 using Microting.OutlookAddon.Messages;
+using Microting.WindowsService.BasePn;
+using System.ComponentModel.Composition;
+using System.IO;
 
-namespace OutlookCore
+namespace WindowsServiceOutlookPlugin
 {
-    public class Core : CoreBase
+    [Export(typeof(ISdkEventHandler))]
+    public class Core : ISdkEventHandler
     {
         //events
         public event EventHandler HandleEventException;
@@ -71,16 +72,18 @@ namespace OutlookCore
 
         //con
         #region public state
-        public bool Start(string connectionString, string service_location)
+        public bool Start(string sdkConnectionString, string serviceLocation)
         {
             try
             {
+
+                string connectionString = File.ReadAllText(serviceLocation +@"\Extensions\OutlookPlugin\sql_connection_outlook.txt").Trim();
                 if (!coreAvailable && !coreStatChanging)
                 {
-                    serviceLocation = service_location;
+                    this.serviceLocation = serviceLocation;
                     coreStatChanging = true;
 
-                    if (string.IsNullOrEmpty(serviceLocation))
+                    if (string.IsNullOrEmpty(this.serviceLocation))
                         throw new ArgumentException("serviceLocation is not allowed to be null or empty");
 
                     if (string.IsNullOrEmpty(connectionString))
@@ -118,7 +121,7 @@ namespace OutlookCore
                     //settings read
                     this.connectionString = connectionString;
                     log.LogStandard(t.GetMethodName("Core"), "Settings read");
-                    log.LogStandard(t.GetMethodName("Core"), "this.serviceLocation is " + serviceLocation);
+                    log.LogStandard(t.GetMethodName("Core"), "this.serviceLocation is " + this.serviceLocation);
 
                     //Initialise Outlook API client's object
                     //if (sqlController.SettingRead(Settings.calendarName) == "unittest")
@@ -128,7 +131,7 @@ namespace OutlookCore
                     //}
                     //else
                     //{
-                        outlookExchangeOnlineAPI = new OutlookExchangeOnlineAPIClient(serviceLocation, log);
+                    outlookExchangeOnlineAPI = new OutlookExchangeOnlineAPIClient(this.serviceLocation, log);
                         log.LogStandard(t.GetMethodName("Core"), "OutlookController started");
                     //}
                     log.LogStandard(t.GetMethodName("Core"), "OutlookController started");
@@ -166,6 +169,8 @@ namespace OutlookCore
             catch (Exception ex)
             {
                 log.LogException(t.GetMethodName("Core"), "Start failed", ex, false);
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Start failed " + ex.Message);
                 throw ex;
             }
             #endregion
@@ -173,8 +178,9 @@ namespace OutlookCore
             return true;
         }
 
-        public bool Close()
+        public bool Restart(int sameExceptionCount, int sameExceptionCountMax, bool shutdownReallyFast) { return true; }
 
+        public bool Stop(bool shutdownReallyFast)
         {
             try
             {
@@ -303,7 +309,7 @@ namespace OutlookCore
                             foreach (AppoinntmentSite appo_site in appo.AppointmentSites)
                             {
                                 log.LogEverything(t.GetMethodName("Core"), "checking appointment_site with MicrotingUuId : " + appo_site.MicrotingUuId.ToString());
-                                Case_Dto kase = sdkCore.CaseReadByCaseId(int.Parse(appo_site.MicrotingUuId));
+                                eFormShared.Case_Dto kase = sdkCore.CaseReadByCaseId(int.Parse(appo_site.MicrotingUuId));
                                 if (kase == null)
                                 {
                                     log.LogEverything(t.GetMethodName("Core"), "kase IS NULL!");
@@ -415,5 +421,46 @@ namespace OutlookCore
 
             sdkCore.StartSqlOnly(sdkConnectionString);
         }
+
+        public void CoreEventException(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnitActivated(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void eFormProcessed(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void eFormProcessingError(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void eFormRetrived(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CaseCompleted(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CaseDeleted(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NotificationNotFound(object sender, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

@@ -1,5 +1,4 @@
-﻿using eFormShared;
-using OutlookSql;
+﻿using OutlookSql;
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using OutlookExchangeOnlineAPI;
 using Rebus.Bus;
 using Microting.OutlookAddon.Messages;
+using WindowsServiceOutlookPlugin;
 
 namespace OutlookOfficeOnline
 {

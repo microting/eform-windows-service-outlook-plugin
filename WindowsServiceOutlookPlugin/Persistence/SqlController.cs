@@ -1,15 +1,12 @@
-﻿using eFormShared;
-using OutlookSql.Migrations;
+﻿using OutlookSql.Migrations;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
+using WindowsServiceOutlookPlugin;
 
 namespace OutlookSql
 {
@@ -981,13 +978,14 @@ namespace OutlookSql
                     case Settings.firstRunDone: id = 1; defaultValue = "false"; break;
                     case Settings.logLevel: id = 2; defaultValue = "4"; break;
                     case Settings.logLimit: id = 3; defaultValue = "250"; break;
-                    #region  case Settings.microtingDb:              id =  4;    defaultValue = 'MicrotingDB';                           break;
+                    #region  
+                    //case Settings.microtingDb: id =  4;    defaultValue = 'MicrotingDB'; break;
                     case Settings.microtingDb:
 
                         string microtingConnectionString = "...missing...";
                         try
                         {
-                            microtingConnectionString = connectionStr.Replace("MicrotingOutlook", "Microting");
+                            microtingConnectionString = connectionStr.Replace("Outlook", "SDK");
                             SettingUpdate(Settings.firstRunDone, "true");
                         }
                         catch { }
@@ -1136,7 +1134,7 @@ namespace OutlookSql
         #endregion
 
         #region public write log
-        public Log StartLog(CoreBase core)
+        public Log StartLog(Core core)
         {
             try
             {

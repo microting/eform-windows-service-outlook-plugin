@@ -1,5 +1,4 @@
 ﻿using eFormData;
-using OutlookCore;
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WindowsServiceOutlookPlugin;
 
 namespace SourceCode
 {
@@ -16,109 +16,133 @@ namespace SourceCode
 
         static void Main(string[] args)
         {
+            string serverConnectionString = "";
+            //string fakedServiceName = "MicrotingOdense";
+            Console.WriteLine("Enter database to use:");
+            Console.WriteLine("> If left blank, it will use 'Microting'");
+            Console.WriteLine("  Enter name of database to be used");
+            string databaseName = Console.ReadLine();
+
+            if (databaseName.ToUpper() != "")
+                serverConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=" + databaseName + ";Integrated Security=True";
+            if (databaseName.ToUpper() == "T")
+                serverConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=" + "MicrotingTest_Outlook" + ";Integrated Security=True";
+            if (databaseName.ToUpper() == "O")
+                serverConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=" + "MicrotingOdense_Outlook" + ";Integrated Security=True";
+            if (serverConnectionString == "")
+                serverConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=" + "MicrotingSourceCode_Outlook" + ";Integrated Security=True";
+
             Core outCore = new Core();
-            eFormCore.Core sdkCore = new eFormCore.Core();
+            //serveiceLogic.OverrideServiceLocation("c:\\microtingservice\\" + fakedServiceName + "\\");
 
-            string outConStr = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + "MicrotingOutlook123" + ";Integrated Security=True";
-            string sdkConStr = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + "V166" + ";Integrated Security=True";
-            //string serviceLocation = "";
+            outCore.Start(serverConnectionString, GetServiceLocation());
+            Console.WriteLine("Press any key to close");
+            Console.ReadKey();
+            outCore.Stop(false);
 
-            while (true)
-            {
-                #region text + read input
-                Console.WriteLine("");
-                Console.WriteLine("Input    : 'C'lose,'R'eset & 'Q'uit.");
-                Console.WriteLine("Outlook  : 'O' start.  Running:" + outCore.Running());
-                Console.WriteLine("SDK Core : 'S' start.  Running:" + sdkCore.Running());
-                Console.WriteLine("-        : 'T'emplate");
-                string tempLower = Console.ReadLine().ToLower();
-                #endregion
+            //Core outCore = new Core();
+            //eFormCore.Core sdkCore = new eFormCore.Core();
 
-                if (tempLower == "o")
-                #region outlook core start
-                {
-                    outCore.Start(outConStr, GetServiceLocation());
-                }
-                #endregion
+            //string outConStr = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + "MicrotingOutlook123" + ";Integrated Security=True";
+            //string sdkConStr = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + "V166" + ";Integrated Security=True";
+            ////string serviceLocation = "";
 
-                if (tempLower == "s")
-                #region SDK core start
-                {
-                    sdkCore.Start(sdkConStr);
-                }
-                #endregion
+            //while (true)
+            //{
+            //    #region text + read input
+            //    Console.WriteLine("");
+            //    Console.WriteLine("Input    : 'C'lose,'R'eset & 'Q'uit.");
+            //    Console.WriteLine("Outlook  : 'O' start.  Running:" + outCore.Running());
+            //    Console.WriteLine("SDK Core : 'S' start.  Running:" + sdkCore.Running());
+            //    Console.WriteLine("-        : 'T'emplate");
+            //    string tempLower = Console.ReadLine().ToLower();
+            //    #endregion
 
-                if (tempLower == "r")
-                #region reset
-                {
-                    sdkCore.Close();
-                    outCore.Close();
-                    //outCore.UnitTest_Reset(outConStr);
-                }
-                #endregion
+            //    if (tempLower == "o")
+            //    #region outlook core start
+            //    {
+            //        outCore.Start(outConStr, GetServiceLocation());
+            //    }
+            //    #endregion
 
-                if (tempLower == "c")
-                #region close
-                {
-                    sdkCore.Close();
-                    outCore.Close();
-                }
-                #endregion
+            //    if (tempLower == "s")
+            //    #region SDK core start
+            //    {
+            //        sdkCore.Start(sdkConStr);
+            //    }
+            //    #endregion
 
-                if (tempLower == "q")
-                #region quit
-                {
-                    sdkCore.Close();
-                    outCore.Close();
-                    break;
-                }
-                #endregion
+            //    if (tempLower == "r")
+            //    #region reset
+            //    {
+            //        sdkCore.Close();
+            //        outCore.Stop(false);
+            //        //outCore.UnitTest_Reset(outConStr);
+            //    }
+            //    #endregion
 
-                if (tempLower == "t")
-                #region template
-                {
-                    if (sdkCore.Running())
-                    {
-                        Console.WriteLine("Creating eForm template from the xmlTemplate.txt");
+            //    if (tempLower == "c")
+            //    #region close
+            //    {
+            //        sdkCore.Close();
+            //        outCore.Stop(false);
+            //    }
+            //    #endregion
 
-                        string xmlStr = File.ReadAllText("xmlTemplate.txt");
-                        var main = sdkCore.TemplateFromXml(xmlStr);
-                        main = sdkCore.TemplateUploadData(main);
+            //    if (tempLower == "q")
+            //    #region quit
+            //    {
+            //        sdkCore.Close();
+            //        outCore.Stop(false);
+            //        break;
+            //    }
+            //    #endregion
 
-                        // Best practice is to validate the parsed xml before trying to save and handle the error(s) gracefully.
-                        List<string> validationErrors = sdkCore.TemplateValidation(main);
-                        if (validationErrors.Count < 1)
-                        {
-                            main.Repeated = 1;
-                            main.CaseType = "Test";
-                            main.StartDate = DateTime.Now;
-                            main.EndDate = DateTime.Now.AddDays(2);
+            //    if (tempLower == "t")
+            //    #region template
+            //    {
+            //        if (sdkCore.Running())
+            //        {
+            //            Console.WriteLine("Creating eForm template from the xmlTemplate.txt");
 
-                            try
-                            {
-                                Console.WriteLine("- TemplateId = " + sdkCore.TemplateCreate(main));
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception("PANIC !!!", ex);
-                            }
-                        }
-                        else
-                        {
-                            foreach (string error in validationErrors)
-                                Console.WriteLine("The following error is stopping us from creating the template: " + error);
+            //            string xmlStr = File.ReadAllText("xmlTemplate.txt");
+            //            var main = sdkCore.TemplateFromXml(xmlStr);
+            //            main = sdkCore.TemplateUploadData(main);
 
-                            Console.WriteLine("Correct the errors in xmlTemplate.txt and try again");
-                        }
-                    }
-                    else
-                        Console.WriteLine("SDK Core not running");
-                }
-                #endregion
-            }
+            //            // Best practice is to validate the parsed xml before trying to save and handle the error(s) gracefully.
+            //            List<string> validationErrors = sdkCore.TemplateValidation(main);
+            //            if (validationErrors.Count < 1)
+            //            {
+            //                main.Repeated = 1;
+            //                main.CaseType = "Test";
+            //                main.StartDate = DateTime.Now;
+            //                main.EndDate = DateTime.Now.AddDays(2);
 
-            Console.WriteLine("Closing app in 0,5 sec");
-            Thread.Sleep(0500);
+            //                try
+            //                {
+            //                    Console.WriteLine("- TemplateId = " + sdkCore.TemplateCreate(main));
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    throw new Exception("PANIC !!!", ex);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                foreach (string error in validationErrors)
+            //                    Console.WriteLine("The following error is stopping us from creating the template: " + error);
+
+            //                Console.WriteLine("Correct the errors in xmlTemplate.txt and try again");
+            //            }
+            //        }
+            //        else
+            //            Console.WriteLine("SDK Core not running");
+            //    }
+            //    #endregion
+            //}
+
+            //Console.WriteLine("Closing app in 0,5 sec");
+            //Thread.Sleep(0500);
         }
 
         static void Stump(object sender, EventArgs args)
