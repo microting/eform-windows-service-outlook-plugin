@@ -75,8 +75,8 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microting.eForm, Version=2.1.298.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microting.eForm.2.1.298\lib\net45\Microting.eForm.dll</HintPath>
+    <Reference Include="Microting.eForm, Version=2.1.301.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microting.eForm.2.1.301\lib\net45\Microting.eForm.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.12\lib\net45\MySql.Data.dll</HintPath>
@@ -125,13 +125,13 @@
     <Analyzer Include="..\packages\AWSSDK.SQS.3.3.3.11\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="JasperExporter.jar" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\WindowsServiceOutlookPlugin\WindowsServiceOutlookPlugin.csproj">
       <Project>{c5b13ba1-aa9e-4df9-850a-b6654429de17}</Project>
       <Name>WindowsServiceOutlookPlugin</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="JasperExporter.jar" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
