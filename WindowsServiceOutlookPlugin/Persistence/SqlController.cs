@@ -237,7 +237,7 @@ namespace OutlookSql
                     if (match != null)
                     {
                         bool color_rule = match.color_rule == 0 ? true : false;
-                        Appointment appo = new Appointment(match.global_id, (DateTime)match.start_at, (int)match.duration, match.subject, match.processing_state, match.body, color_rule, false, match.id);
+                        Appointment appo = new Appointment(match.global_id, (DateTime)match.start_at, (int)match.duration, match.subject, match.processing_state, match.body, color_rule, match.id);
                         appo.Completed = match.completed == 0 ? false : true;
                         try {
                             appo.TemplateId = (int)match.template_id;
@@ -299,7 +299,7 @@ namespace OutlookSql
                     if (match != null)
                     {
                         bool color_rule = match.color_rule == 0 ? true : false;
-                        Appointment appo = new Appointment(match.global_id, (DateTime)match.start_at, (int)match.duration, match.subject, match.processing_state, match.body, color_rule, false, match.id);
+                        Appointment appo = new Appointment(match.global_id, (DateTime)match.start_at, (int)match.duration, match.subject, match.processing_state, match.body, color_rule, match.id);
                         appo.TemplateId = (int)match.template_id;
 
                         foreach (appointment_sites appo_site in match.appointment_sites)
@@ -501,7 +501,7 @@ namespace OutlookSql
                         return null;
 
                     appointments _appo = _appo_site.appointment;
-                    Appointment appo = new Appointment(_appo.global_id, (DateTime)_appo.start_at, (int)_appo.duration, _appo.subject, _appo.processing_state, _appo.body, (_appo.color_rule == 0 ? false : true), false, _appo.id);
+                    Appointment appo = new Appointment(_appo.global_id, (DateTime)_appo.start_at, (int)_appo.duration, _appo.subject, _appo.processing_state, _appo.body, (_appo.color_rule == 0 ? false : true), _appo.id);
                     AppoinntmentSite appo_site = new AppoinntmentSite((int)_appo_site.id, _appo_site.microting_site_uid, _appo_site.processing_state, _appo_site.sdk_case_id);
                     appo.AppointmentSites.Add(appo_site);
 

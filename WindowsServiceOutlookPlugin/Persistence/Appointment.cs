@@ -40,7 +40,7 @@ namespace OutlookSql
 
         }
 
-        public Appointment(string globalId, DateTime start, int duration, string subject, string processingState, string body, bool colorRule, bool parseBodyContent, int? id)
+        public Appointment(string globalId, DateTime start, int duration, string subject, string processingState, string body, bool colorRule, int? id)
         {
             Id = id;
             GlobalId = globalId;
@@ -62,8 +62,6 @@ namespace OutlookSql
             ColorRule = colorRule;
             MicrotingUId = "";
 
-            if (parseBodyContent)
-                BodyToFields(body);
         }
         #endregion
 
@@ -91,209 +89,263 @@ namespace OutlookSql
         }
         #endregion
 
-        #region private
-        private void BodyToFields(string body)
+        //#region private
+        public void ParseBodyContent()
         {
-            if (body == null)
-                body = "";
 
-            //KeyPoint
-            try
-            {
-                string parsedFailedStr = ReadingFields(body);
+            FindCheckListId();
+            FindSites();
+            //try
+            //{
+            //    string parsedFailedStr = ParseFields();
 
-                if (parsedFailedStr != "")
-                {
-                    ProcessingState = ProcessingStateOptions.ParsingFailed.ToString();
-                    Body =
-                    "<<< Interpret error: Start >>>" + Environment.NewLine +
-                    parsedFailedStr + Environment.NewLine +
-                    "<<< Interpret error: End >>>" + Environment.NewLine +
-                    Environment.NewLine +
-                    Body;
-                }
-            }
-            catch (Exception ex)
-            {
-                ProcessingState = ProcessingStateOptions.Exception.ToString();
-                Body =
-                "<<< Exception: Start >>>" + Environment.NewLine +
-                t.PrintException("Failed to intrepid this event, for the following reason:", ex) + Environment.NewLine +
-                "<<< Exception: End >>>" + Environment.NewLine +
-                Environment.NewLine +
-                Body;
-            }
+            //    if (parsedFailedStr != "")
+            //    {
+            //        ProcessingState = ProcessingStateOptions.ParsingFailed.ToString();
+            //        Body =
+            //        "<<< Interpret error: Start >>>" + Environment.NewLine +
+            //        parsedFailedStr + Environment.NewLine +
+            //        "<<< Interpret error: End >>>" + Environment.NewLine +
+            //        Environment.NewLine +
+            //        Body;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    ProcessingState = ProcessingStateOptions.Exception.ToString();
+            //    Body =
+            //    "<<< Exception: Start >>>" + Environment.NewLine +
+            //    t.PrintException("Failed to intrepid this event, for the following reason:", ex) + Environment.NewLine +
+            //    "<<< Exception: End >>>" + Environment.NewLine +
+            //    Environment.NewLine +
+            //    Body;
+            //}
         }
 
-        private string ReadingFields(string body)
+        private void FindCheckListId()
         {
-            #region var
-            string[] lines = body.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            AppointmentSites = new List<AppoinntmentSite>();
-            Replacements = new List<string>();
-            string check = "";
-            string rtrnMsg = "";
-            #endregion
+            TemplateId = int.Parse(FindValue("template#"));
+        }
 
+        private void FindSites()
+        {
+            string[] lines = Body.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string check = "sites#";
             foreach (var line in lines)
             {
-                try
+                string input = line.ToLower();
+
+                if (input.Contains(check))
                 {
-                    string input = line.ToLower();
+                    string lineNoComma = line.Remove(0, check.Length).Trim();
+                    lineNoComma = lineNoComma.Replace(",", "|");
 
-                    #region template and sites
-                    if (input.Trim() == "")
-                        continue;
-
-                    check = "template#";
-                    if (input.Contains(check))
+                    foreach (var item in t.TextLst(lineNoComma))
                     {
-                        string itemStr = line.Remove(0, check.Length).Trim();
-
-                        if (itemStr.Contains("failed, for title"))
-                            rtrnMsg = itemStr + Environment.NewLine +
-                                "" + Environment.NewLine + rtrnMsg;
-
-                        TemplateId = int.Parse(itemStr);
-
-                        continue;
+                        AppoinntmentSite appointmentSite = new AppoinntmentSite(null, int.Parse(item), ProcessingStateOptions.Processed.ToString(), null);
+                        AppointmentSites.Add(appointmentSite);
                     }
 
-                    check = "sites#";
-                    if (input.Contains(check))
-                    {
-                        string lineNoComma = line.Remove(0, check.Length).Trim();
-                        lineNoComma = lineNoComma.Replace(",", "|");
+                    AppointmentSites = AppointmentSites.Distinct().ToList();
 
-                        foreach (var item in t.TextLst(lineNoComma))
-                        {
-                            AppoinntmentSite appointmentSite = new AppoinntmentSite(null, int.Parse(item), ProcessingStateOptions.Processed.ToString(), null);
-                            AppointmentSites.Add(appointmentSite);
-                        }
-
-                        AppointmentSites = AppointmentSites.Distinct().ToList();
-
-                        continue;
-                    }
-                    #endregion
-
-                    #region tags
-                    check = "connected#";
-                    if (input.Contains(check))
-                    {
-                        Connected = t.Bool(line.Remove(0, check.Length).Trim());
-                        continue;
-                    }
-
-                    check = "title#";
-                    if (input.Contains(check))
-                    {
-                        Title = line.Remove(0, check.Length).Trim();
-                        continue;
-                    }
-
-                    check = "description#";
-                    if (input.Contains(check))
-                    {
-                        string temp = line.Remove(0, check.Length).Trim();
-
-                        if (Description == "")
-                            Description = temp;
-                        else
-                            Description += "<br>" + temp;
-
-                        continue;
-                    }
-
-                    check = "info#";
-                    if (input.Contains(check))
-                    {
-                        string temp = line.Remove(0, check.Length).Trim();
-
-                        if (Info == "")
-                            Info = temp;
-                        else
-                            Info += "<br>" + temp;
-
-                        continue;
-                    }
-
-                    check = "expire#";
-                    if (input.Contains(check))
-                    {
-                        Expire = int.Parse(line.Remove(0, check.Length).Trim());
-                        continue;
-                    }
-
-                    check = "color#";
-                    if (input.Contains(check))
-                    {
-                        ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
-                        continue;
-                    }
-
-                    check = "colour#";
-                    if (input.Contains(check))
-                    {
-                        ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
-                        continue;
-                    }
-
-                    check = "replacements#";
-                    if (input.Contains(check))
-                    {
-                        if (input.Contains("=="))
-                        {
-                            Replacements.Add(line.Remove(0, check.Length).Trim());
-                            continue;
-                        }
-                        else
-                        {
-                            rtrnMsg = "The following replacement line:'" + line + "' did not contain a '=='." + Environment.NewLine +
-                                "- Expected format: replacements#[old text]==[new text]" + Environment.NewLine +
-                                "- Sample 1       : replacements#Location==Odense" + Environment.NewLine +
-                                "- Sample 2       : replacements#[Choice1]==true" + Environment.NewLine +
-                                "" + Environment.NewLine + rtrnMsg;
-                            continue;
-                        }
-                    }
-                    #endregion
-
-                    //unknown
-                    if (input.Contains("#"))
-                        rtrnMsg = "The following line:'" + line + "' contains a '#'. Line tag not recognized." + Environment.NewLine +
-                            "- Expected format: [line tag]#[infomation]" + Environment.NewLine +
-                            "- Known line tags: 'connected', 'title', 'info', 'expire', 'color', 'colour' & 'replacements'" + Environment.NewLine +
-                            "- Sample 1       : connected#false" + Environment.NewLine +
-                            "- Sample 2       : connected# 0" + Environment.NewLine +
-                            "" + Environment.NewLine + rtrnMsg;
-                }
-                catch (Exception ex)
-                {
-                    rtrnMsg = t.PrintException("The following line:'" + line + "' coursed a exception", ex) + Environment.NewLine +
-                      "" + Environment.NewLine + rtrnMsg;
+                    continue;
                 }
             }
-
-            #region none-optional
-            if (AppointmentSites.Count < 1)
-                rtrnMsg = "The mandatory field 'sites' input not recognized." + Environment.NewLine +
-                    "- Expected format: sites#[identifier](,[identifier])*n" + Environment.NewLine +
-                    "- Sample 1       : sites#1234,2345,3456" + Environment.NewLine +
-                    "- Sample 2       : sites#'Salg',1234,'Peter',2345" + Environment.NewLine +
-                    "" + Environment.NewLine + rtrnMsg;
-
-            if (TemplateId < 1)
-                rtrnMsg = "The mandatory field 'template' input not recognized." + Environment.NewLine +
-                    "- Expected format: template#[identifier]" + Environment.NewLine +
-                    "- Sample 1       : template#12" + Environment.NewLine +
-                    "- Sample 2       : template#'Container check'" + Environment.NewLine +
-                    "" + Environment.NewLine + rtrnMsg;
-            #endregion
-
-            return rtrnMsg.Trim();
         }
-        #endregion
+
+        private string FindValue(string searchKey)
+        {
+            string[] lines = Body.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string returnValue = "";
+            foreach (var line in lines)
+            {
+                string input = line.ToLower();
+                if (input.Trim() == "")
+                    continue;
+                if (input.Contains(searchKey))
+                {
+                    string itemStr = line.Remove(0, searchKey.Length).Trim();
+
+                    returnValue = itemStr;
+
+                    continue;
+                }
+            }
+            return returnValue;
+        }
+
+        //    private void ParseFields()
+        //    {
+
+
+
+        //        #region var
+        //        //string[] lines = Body.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+        //        //AppointmentSites = new List<AppoinntmentSite>();
+        //        //Replacements = new List<string>();
+        //        //string check = "";
+        //        //string rtrnMsg = "";
+        //        #endregion
+
+        //        //foreach (var line in lines)
+        //        //{
+        //        //    try
+        //        //    {
+        //        //        string input = line.ToLower();
+
+        //        //        #region template and sites
+        //        //        if (input.Trim() == "")
+        //        //            continue;
+
+        //        //        //check = "template#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    string itemStr = line.Remove(0, check.Length).Trim();
+
+        //        //        //    if (itemStr.Contains("failed, for title"))
+        //        //        //        rtrnMsg = itemStr + Environment.NewLine +
+        //        //        //            "" + Environment.NewLine + rtrnMsg;
+
+        //        //        //    TemplateId = int.Parse(itemStr);
+
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "sites#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    string lineNoComma = line.Remove(0, check.Length).Trim();
+        //        //        //    lineNoComma = lineNoComma.Replace(",", "|");
+
+        //        //        //    foreach (var item in t.TextLst(lineNoComma))
+        //        //        //    {
+        //        //        //        AppoinntmentSite appointmentSite = new AppoinntmentSite(null, int.Parse(item), ProcessingStateOptions.Processed.ToString(), null);
+        //        //        //        AppointmentSites.Add(appointmentSite);
+        //        //        //    }
+
+        //        //        //    AppointmentSites = AppointmentSites.Distinct().ToList();
+
+        //        //        //    continue;
+        //        //        //}
+        //        //        #endregion
+
+        //        //        #region tags
+        //        //        //check = "connected#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    Connected = t.Bool(line.Remove(0, check.Length).Trim());
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "title#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    Title = line.Remove(0, check.Length).Trim();
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "description#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    string temp = line.Remove(0, check.Length).Trim();
+
+        //        //        //    if (Description == "")
+        //        //        //        Description = temp;
+        //        //        //    else
+        //        //        //        Description += "<br>" + temp;
+
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "info#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    string temp = line.Remove(0, check.Length).Trim();
+
+        //        //        //    if (Info == "")
+        //        //        //        Info = temp;
+        //        //        //    else
+        //        //        //        Info += "<br>" + temp;
+
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "expire#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    Expire = int.Parse(line.Remove(0, check.Length).Trim());
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "color#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "colour#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
+        //        //        //    continue;
+        //        //        //}
+
+        //        //        //check = "replacements#";
+        //        //        //if (input.Contains(check))
+        //        //        //{
+        //        //        //    if (input.Contains("=="))
+        //        //        //    {
+        //        //        //        Replacements.Add(line.Remove(0, check.Length).Trim());
+        //        //        //        continue;
+        //        //        //    }
+        //        //        //    else
+        //        //        //    {
+        //        //        //        rtrnMsg = "The following replacement line:'" + line + "' did not contain a '=='." + Environment.NewLine +
+        //        //        //            "- Expected format: replacements#[old text]==[new text]" + Environment.NewLine +
+        //        //        //            "- Sample 1       : replacements#Location==Odense" + Environment.NewLine +
+        //        //        //            "- Sample 2       : replacements#[Choice1]==true" + Environment.NewLine +
+        //        //        //            "" + Environment.NewLine + rtrnMsg;
+        //        //        //        continue;
+        //        //        //    }
+        //        //        //}
+        //        //        #endregion
+
+        //        //        //unknown
+        //        //        //if (input.Contains("#"))
+        //        //        //    rtrnMsg = "The following line:'" + line + "' contains a '#'. Line tag not recognized." + Environment.NewLine +
+        //        //        //        "- Expected format: [line tag]#[infomation]" + Environment.NewLine +
+        //        //        //        "- Known line tags: 'connected', 'title', 'info', 'expire', 'color', 'colour' & 'replacements'" + Environment.NewLine +
+        //        //        //        "- Sample 1       : connected#false" + Environment.NewLine +
+        //        //        //        "- Sample 2       : connected# 0" + Environment.NewLine +
+        //        //        //        "" + Environment.NewLine + rtrnMsg;
+        //        //    }
+        //        //    catch (Exception ex)
+        //        //    {
+        //        //        rtrnMsg = t.PrintException("The following line:'" + line + "' coursed a exception", ex) + Environment.NewLine +
+        //        //          "" + Environment.NewLine + rtrnMsg;
+        //        //    }
+        //        //}
+
+        //        //#region none-optional
+        //        //if (AppointmentSites.Count < 1)
+        //        //    rtrnMsg = "The mandatory field 'sites' input not recognized." + Environment.NewLine +
+        //        //        "- Expected format: sites#[identifier](,[identifier])*n" + Environment.NewLine +
+        //        //        "- Sample 1       : sites#1234,2345,3456" + Environment.NewLine +
+        //        //        "- Sample 2       : sites#'Salg',1234,'Peter',2345" + Environment.NewLine +
+        //        //        "" + Environment.NewLine + rtrnMsg;
+
+        //        //if (TemplateId < 1)
+        //        //    rtrnMsg = "The mandatory field 'template' input not recognized." + Environment.NewLine +
+        //        //        "- Expected format: template#[identifier]" + Environment.NewLine +
+        //        //        "- Sample 1       : template#12" + Environment.NewLine +
+        //        //        "- Sample 2       : template#'Container check'" + Environment.NewLine +
+        //        //        "" + Environment.NewLine + rtrnMsg;
+        //        //#endregion
+
+        //        //return rtrnMsg.Trim();
+        //    }
+        //    #endregion
     }
 
     public enum ProcessingStateOptions
