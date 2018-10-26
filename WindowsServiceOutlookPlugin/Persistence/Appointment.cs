@@ -22,6 +22,7 @@ namespace OutlookSql
 
         public int TemplateId { get; set; }
         public List<AppoinntmentSite> AppointmentSites { get; set; }
+        public List<AppointmentPrefillFieldValue> AppointmentPrefillFieldValues { get; set; }
         public bool Connected { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -87,41 +88,19 @@ namespace OutlookSql
 
             return "GlobalId:" + globalId + " / Start:" + start + " / Title:" + title + " / Location:" + location;
         }
-        #endregion
 
-        //#region private
-        public void ParseBodyContent()
+        public void ParseBodyContent(eFormCore.Core sdkCore)
         {
 
             FindCheckListId();
             FindSites();
-            //try
-            //{
-            //    string parsedFailedStr = ParseFields();
+            FindFieldPreFillValues(sdkCore);
 
-            //    if (parsedFailedStr != "")
-            //    {
-            //        ProcessingState = ProcessingStateOptions.ParsingFailed.ToString();
-            //        Body =
-            //        "<<< Interpret error: Start >>>" + Environment.NewLine +
-            //        parsedFailedStr + Environment.NewLine +
-            //        "<<< Interpret error: End >>>" + Environment.NewLine +
-            //        Environment.NewLine +
-            //        Body;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    ProcessingState = ProcessingStateOptions.Exception.ToString();
-            //    Body =
-            //    "<<< Exception: Start >>>" + Environment.NewLine +
-            //    t.PrintException("Failed to intrepid this event, for the following reason:", ex) + Environment.NewLine +
-            //    "<<< Exception: End >>>" + Environment.NewLine +
-            //    Environment.NewLine +
-            //    Body;
-            //}
+
         }
+        #endregion
 
+        #region private
         private void FindCheckListId()
         {
             TemplateId = int.Parse(FindValue("template#"));
@@ -137,6 +116,7 @@ namespace OutlookSql
 
                 if (input.Contains(check))
                 {
+                    // Extracts the contect to the right of the searchkey.
                     string lineNoComma = line.Remove(0, check.Length).Trim();
                     lineNoComma = lineNoComma.Replace(",", "|");
 
@@ -164,6 +144,7 @@ namespace OutlookSql
                     continue;
                 if (input.Contains(searchKey))
                 {
+                    // Extracts the contect to the right of the searchkey.
                     string itemStr = line.Remove(0, searchKey.Length).Trim();
 
                     returnValue = itemStr;
@@ -173,179 +154,24 @@ namespace OutlookSql
             }
             return returnValue;
         }
+        
+        private void FindFieldPreFillValues(eFormCore.Core sdkCore)
+        {
+            List<Field_Dto> fieldDtos = sdkCore.Advanced_TemplateFieldReadAll(TemplateId);
 
-        //    private void ParseFields()
-        //    {
+            foreach (Field_Dto fieldDto in fieldDtos)
+            {
+                string value = FindValue($"F{fieldDto.Id}#");
 
+                if (!string.IsNullOrEmpty(value))
+                {
+                    AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(fieldDto.Id, value, (int)Id);
+                    AppointmentPrefillFieldValues.Add(appointmentPrefillFieldValue);
+                }
+            }
+        }
+        #endregion
 
-
-        //        #region var
-        //        //string[] lines = Body.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-        //        //AppointmentSites = new List<AppoinntmentSite>();
-        //        //Replacements = new List<string>();
-        //        //string check = "";
-        //        //string rtrnMsg = "";
-        //        #endregion
-
-        //        //foreach (var line in lines)
-        //        //{
-        //        //    try
-        //        //    {
-        //        //        string input = line.ToLower();
-
-        //        //        #region template and sites
-        //        //        if (input.Trim() == "")
-        //        //            continue;
-
-        //        //        //check = "template#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    string itemStr = line.Remove(0, check.Length).Trim();
-
-        //        //        //    if (itemStr.Contains("failed, for title"))
-        //        //        //        rtrnMsg = itemStr + Environment.NewLine +
-        //        //        //            "" + Environment.NewLine + rtrnMsg;
-
-        //        //        //    TemplateId = int.Parse(itemStr);
-
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "sites#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    string lineNoComma = line.Remove(0, check.Length).Trim();
-        //        //        //    lineNoComma = lineNoComma.Replace(",", "|");
-
-        //        //        //    foreach (var item in t.TextLst(lineNoComma))
-        //        //        //    {
-        //        //        //        AppoinntmentSite appointmentSite = new AppoinntmentSite(null, int.Parse(item), ProcessingStateOptions.Processed.ToString(), null);
-        //        //        //        AppointmentSites.Add(appointmentSite);
-        //        //        //    }
-
-        //        //        //    AppointmentSites = AppointmentSites.Distinct().ToList();
-
-        //        //        //    continue;
-        //        //        //}
-        //        //        #endregion
-
-        //        //        #region tags
-        //        //        //check = "connected#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    Connected = t.Bool(line.Remove(0, check.Length).Trim());
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "title#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    Title = line.Remove(0, check.Length).Trim();
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "description#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    string temp = line.Remove(0, check.Length).Trim();
-
-        //        //        //    if (Description == "")
-        //        //        //        Description = temp;
-        //        //        //    else
-        //        //        //        Description += "<br>" + temp;
-
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "info#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    string temp = line.Remove(0, check.Length).Trim();
-
-        //        //        //    if (Info == "")
-        //        //        //        Info = temp;
-        //        //        //    else
-        //        //        //        Info += "<br>" + temp;
-
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "expire#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    Expire = int.Parse(line.Remove(0, check.Length).Trim());
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "color#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "colour#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    ColorRule = t.Bool(line.Remove(0, check.Length).Trim());
-        //        //        //    continue;
-        //        //        //}
-
-        //        //        //check = "replacements#";
-        //        //        //if (input.Contains(check))
-        //        //        //{
-        //        //        //    if (input.Contains("=="))
-        //        //        //    {
-        //        //        //        Replacements.Add(line.Remove(0, check.Length).Trim());
-        //        //        //        continue;
-        //        //        //    }
-        //        //        //    else
-        //        //        //    {
-        //        //        //        rtrnMsg = "The following replacement line:'" + line + "' did not contain a '=='." + Environment.NewLine +
-        //        //        //            "- Expected format: replacements#[old text]==[new text]" + Environment.NewLine +
-        //        //        //            "- Sample 1       : replacements#Location==Odense" + Environment.NewLine +
-        //        //        //            "- Sample 2       : replacements#[Choice1]==true" + Environment.NewLine +
-        //        //        //            "" + Environment.NewLine + rtrnMsg;
-        //        //        //        continue;
-        //        //        //    }
-        //        //        //}
-        //        //        #endregion
-
-        //        //        //unknown
-        //        //        //if (input.Contains("#"))
-        //        //        //    rtrnMsg = "The following line:'" + line + "' contains a '#'. Line tag not recognized." + Environment.NewLine +
-        //        //        //        "- Expected format: [line tag]#[infomation]" + Environment.NewLine +
-        //        //        //        "- Known line tags: 'connected', 'title', 'info', 'expire', 'color', 'colour' & 'replacements'" + Environment.NewLine +
-        //        //        //        "- Sample 1       : connected#false" + Environment.NewLine +
-        //        //        //        "- Sample 2       : connected# 0" + Environment.NewLine +
-        //        //        //        "" + Environment.NewLine + rtrnMsg;
-        //        //    }
-        //        //    catch (Exception ex)
-        //        //    {
-        //        //        rtrnMsg = t.PrintException("The following line:'" + line + "' coursed a exception", ex) + Environment.NewLine +
-        //        //          "" + Environment.NewLine + rtrnMsg;
-        //        //    }
-        //        //}
-
-        //        //#region none-optional
-        //        //if (AppointmentSites.Count < 1)
-        //        //    rtrnMsg = "The mandatory field 'sites' input not recognized." + Environment.NewLine +
-        //        //        "- Expected format: sites#[identifier](,[identifier])*n" + Environment.NewLine +
-        //        //        "- Sample 1       : sites#1234,2345,3456" + Environment.NewLine +
-        //        //        "- Sample 2       : sites#'Salg',1234,'Peter',2345" + Environment.NewLine +
-        //        //        "" + Environment.NewLine + rtrnMsg;
-
-        //        //if (TemplateId < 1)
-        //        //    rtrnMsg = "The mandatory field 'template' input not recognized." + Environment.NewLine +
-        //        //        "- Expected format: template#[identifier]" + Environment.NewLine +
-        //        //        "- Sample 1       : template#12" + Environment.NewLine +
-        //        //        "- Sample 2       : template#'Container check'" + Environment.NewLine +
-        //        //        "" + Environment.NewLine + rtrnMsg;
-        //        //#endregion
-
-        //        //return rtrnMsg.Trim();
-        //    }
-        //    #endregion
     }
 
     public enum ProcessingStateOptions

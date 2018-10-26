@@ -249,6 +249,12 @@ namespace OutlookSql
                             AppoinntmentSite appoSite = new AppoinntmentSite(appo_site.id, appo_site.microting_site_uid, appo_site.processing_state, appo_site.sdk_case_id);
                             appo.AppointmentSites.Add(appoSite);
                         }
+
+                        foreach (appointment_prefill_field_values pfv in match.appointment_prefill_field_values)
+                        {
+                            AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(pfv.field_id, pfv.field_value, match.id);
+                            appo.AppointmentPrefillFieldValues.Add(appointmentPrefillFieldValue);
+                        }
                         return appo;
                     }
                     else
@@ -506,15 +512,6 @@ namespace OutlookSql
                     appo.AppointmentSites.Add(appo_site);
 
                     return appo;
-                    //match.updated_at = DateTime.Now;
-                    //match.microting_uuid = microtingUuid;
-                    //match.processing_state = processingState.ToString();
-                    //match.version = match.version + 1;
-
-                    //db.appointment_site_versions.Add(MapAppointmentSiteVersions(match));
-                    //db.SaveChanges();
-
-                    //return true;
                 }
             }
             catch (Exception ex)

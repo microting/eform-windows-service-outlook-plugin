@@ -64,6 +64,15 @@ namespace Microting.OutlookAddon.Handlers
                 //mainElement.EndDate = ((DateTime)appo.End.AddDays(1)).ToUniversalTime();
                 mainElement.EndDate = endDt;
                 //log.LogEverything("Not Specified", "outlookController.SyncAppointmentsToSdk() L629");
+
+                #region fill eForm
+                if (Appo.AppointmentPrefillFieldValues.Count > 0)
+                {
+                    SetDefaultValue(mainElement.ElementList, Appo.AppointmentPrefillFieldValues);
+                }
+                #endregion
+
+
                 log.LogEverything("Not Specified", "outlookController.SyncAppointmentsToSdk() StartDate is " + mainElement.StartDate);
                 log.LogEverything("Not Specified", "outlookController.SyncAppointmentsToSdk() EndDate is " + mainElement.EndDate);
                 bool allGood = false;
@@ -125,6 +134,109 @@ namespace Microting.OutlookAddon.Handlers
                 throw ex;
             }
 
+        }
+
+        private void SetDefaultValue(List<eFormData.Element> elementLst, List<AppointmentPrefillFieldValue> fieldValues)
+        {
+            foreach (eFormData.Element element in elementLst)
+            {
+                if (element.GetType() == typeof(eFormData.DataElement))
+                {
+                    eFormData.DataElement dataE = (eFormData.DataElement)element;
+                    foreach (eFormData.DataItem item in dataE.DataItemList)
+                    {
+                        if (item.GetType() == typeof(eFormData.NumberStepper))
+                        {
+                            eFormData.NumberStepper numberStepper = (eFormData.NumberStepper)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    numberStepper.DefaultValue = int.Parse(fv.FieldValue);
+                                }
+                            }
+
+                        }
+                        if (item.GetType() == typeof(eFormData.Number))
+                        {
+                            eFormData.Number numberStepper = (eFormData.Number)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    numberStepper.DefaultValue = int.Parse(fv.FieldValue);
+                                }
+                            }
+
+                        }
+                        if (item.GetType() == typeof(eFormData.Comment))
+                        {
+                            eFormData.Comment comment = (eFormData.Comment)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    comment.Value = fv.FieldValue;
+                                }
+                            }
+
+                        }
+                        if (item.GetType() == typeof(eFormData.Text))
+                        {
+                            eFormData.Text text = (eFormData.Text)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    text.Value = fv.FieldValue;
+                                }
+                            }
+
+                        }
+                        if (item.GetType() == typeof(eFormData.None))
+                        {
+                            eFormData.None text = (eFormData.None)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    CDataValue cDataValue = new CDataValue();
+                                    cDataValue.InderValue = fv.FieldValue;
+                                    text.Description = cDataValue;
+                                }
+                            }
+
+                        }
+                        if (item.GetType() == typeof(eFormData.EntitySearch))
+                        {
+                            eFormData.EntitySearch text = (eFormData.EntitySearch)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    text.DefaultValue = int.Parse(fv.FieldValue);
+                                }
+                            }
+                        }
+                        if (item.GetType() == typeof(eFormData.EntitySelect))
+                        {
+                            eFormData.EntitySelect text = (eFormData.EntitySelect)item;
+                            foreach (AppointmentPrefillFieldValue fv in fieldValues)
+                            {
+                                if (fv.FieldId == item.Id)
+                                {
+                                    text.DefaultValue = int.Parse(fv.FieldValue);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    eFormData.GroupElement groupElement = (eFormData.GroupElement)element;
+                    SetDefaultValue(groupElement.ElementList, fieldValues);
+                }
+            }
         }
     }
 }

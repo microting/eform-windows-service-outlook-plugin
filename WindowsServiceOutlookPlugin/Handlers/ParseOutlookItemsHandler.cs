@@ -111,7 +111,7 @@ namespace Microting.OutlookAddon.Handlers
                 if (appo == null)
                 {
                     appo = new Appointment(message.Item.Id, message.Item.Start.DateTime, (message.Item.End.DateTime - message.Item.Start.DateTime).Minutes, message.Item.Subject, "planned", updatedItem.BodyPreview, t.Bool(sqlController.SettingRead(Settings.colorsRule)), null);
-                    appo.ParseBodyContent();
+                    appo.ParseBodyContent(sdkCore);
                     appoId = sqlController.AppointmentsCreate(appo);
                 }
 

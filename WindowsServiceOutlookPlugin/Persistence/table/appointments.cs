@@ -12,7 +12,9 @@ namespace OutlookSql
         public appointments()
         {
             this.appointment_sites = new HashSet<appointment_sites>();
+            this.appointment_prefill_field_values = new HashSet<appointment_prefill_field_values>();
         }
+
         [Key]
         public int id { get; set; }
 
@@ -65,6 +67,8 @@ namespace OutlookSql
         public short? color_rule { get; set; }
 
         public virtual ICollection<appointment_sites> appointment_sites { get; set; }
+
+        public virtual ICollection<appointment_prefill_field_values> appointment_prefill_field_values { get; set; }
 
         public override string ToString()
         {
