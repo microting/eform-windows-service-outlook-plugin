@@ -958,6 +958,10 @@ namespace OutlookSql
             SettingCreate(Settings.userEmailAddress);
             SettingCreate(Settings.maxParallelism);
             SettingCreate(Settings.numberOfWorkers);
+            SettingCreate(Settings.appId);
+            SettingCreate(Settings.dirId);
+            SettingCreate(Settings.certPath);
+            SettingCreate(Settings.keyPath);
 
             return true;
         }
@@ -974,7 +978,7 @@ namespace OutlookSql
                 {
                     case Settings.firstRunDone: id = 1; defaultValue = "false"; break;
                     case Settings.logLevel: id = 2; defaultValue = "4"; break;
-                    case Settings.logLimit: id = 3; defaultValue = "250"; break;
+                    case Settings.logLimit: id = 3; defaultValue = "250000"; break;
                     #region  
                     //case Settings.microtingDb: id =  4;    defaultValue = 'MicrotingDB'; break;
                     case Settings.microtingDb:
@@ -999,6 +1003,10 @@ namespace OutlookSql
                     case Settings.userEmailAddress: id = 13; defaultValue = "no-reply@invalid.invalid"; break;
                     case Settings.maxParallelism: id = 14; defaultValue = "1"; break;
                     case Settings.numberOfWorkers: id = 15; defaultValue = "1"; break;
+                    case Settings.appId: id = 16; defaultValue = ""; break;
+                    case Settings.dirId: id = 17; defaultValue = ""; break;
+                    case Settings.certPath: id = 18; defaultValue = ""; break;
+                    case Settings.keyPath: id = 19; defaultValue = ""; break;
 
                     default:
                         throw new IndexOutOfRangeException(name.ToString() + " is not a known/mapped Settings type");
@@ -1299,109 +1307,7 @@ namespace OutlookSql
             return version;
         }
         #endregion
-
-        #region unit test
-        public bool UnitTest_TruncateTable(string tableName)
-        {
-            try
-            {
-                using (var db = GetContextO())
-                {
-                    if (msSql)
-                    {
-                        db.Database.ExecuteSqlCommand("DELETE FROM [dbo].[" + tableName + "];");
-                        db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('" + tableName + "', RESEED, 1);");
-
-                        return true;
-                    }
-                    else
-                    {
-                        db.Database.ExecuteSqlCommand("SET FOREIGN_KEY_CHECKS=0");
-                        db.Database.ExecuteSqlCommand("TRUNCATE TABLE " + tableName + ";");
-                        db.Database.ExecuteSqlCommand("SET FOREIGN_KEY_CHECKS=1");
-
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                string str = ex.Message;
-                return false;
-            }
-        }
-
-        //public bool                 UnitTest_TruncateTable_Microting(string tableName)
-        //{
-        //    try
-        //    {
-        //        using (var db = GetContextM())
-        //        {
-        //            if (msSql)
-        //            {
-        //                db.Database.ExecuteSqlCommand("DELETE FROM [dbo].[" + tableName + "];");
-        //                db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('" + tableName + "', RESEED, 1);");
-
-        //                return true;
-        //            }
-        //            else
-        //            {
-        //                db.Database.ExecuteSqlCommand("SET FOREIGN_KEY_CHECKS=0");
-        //                db.Database.ExecuteSqlCommand("TRUNCATE TABLE " + tableName + ";");
-        //                db.Database.ExecuteSqlCommand("SET FOREIGN_KEY_CHECKS=1");
-
-        //                return true;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        string str = ex.Message;
-        //        return false;
-        //    }
-        //}
-
-        public bool UnitTest_OutlookDatabaseClear()
-        {
-            try
-            {
-                using (var db = GetContextO())
-                {
-                    UnitTest_TruncateTable(typeof(appointment_versions).Name);
-                    UnitTest_TruncateTable(typeof(appointments).Name);
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                string str = ex.Message;
-                return false;
-            }
-        }
-
-        public int UnitTest_FindLog(int checkCount, string checkValue)
-        {
-            try
-            {
-                using (var db = GetContextO())
-                {
-                    List<logs> lst = db.logs.OrderByDescending(x => x.id).Take(checkCount).ToList();
-                    int count = 0;
-
-                    foreach (logs item in lst)
-                        if (item.message.Contains(checkValue))
-                            count++;
-
-                    return count;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("UnitTest_FindAllActiveEntities failed", ex);
-            }
-        }
-        #endregion
+        
     }
 
     public enum Settings
@@ -1420,6 +1326,10 @@ namespace OutlookSql
         calendarName,
         userEmailAddress,
         maxParallelism,
-        numberOfWorkers
+        numberOfWorkers,
+        appId,
+        dirId,
+        certPath,
+        keyPath
     }
 }
