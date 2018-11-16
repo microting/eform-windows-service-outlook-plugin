@@ -116,7 +116,7 @@ namespace OutlookSql
 
                 if (input.Contains(check))
                 {
-                    // Extracts the contect to the right of the searchkey.
+                    // Extracts the content to the right of the searchkey.
                     string lineNoComma = line.Remove(0, check.Length).Trim();
                     lineNoComma = lineNoComma.Replace(",", "|");
 
@@ -144,7 +144,7 @@ namespace OutlookSql
                     continue;
                 if (input.Contains(searchKey))
                 {
-                    // Extracts the contect to the right of the searchkey.
+                    // Extracts the content to the right of the searchkey.
                     string itemStr = line.Remove(0, searchKey.Length).Trim();
 
                     returnValue = itemStr;

@@ -126,7 +126,7 @@
       <Version>3.19.8</Version>
     </PackageReference>
     <PackageReference Include="Microting.eForm">
-      <Version>3.0.61</Version>
+      <Version>3.0.87</Version>
     </PackageReference>
     <PackageReference Include="Microting.WindowsService.BasePn">
       <Version>1.1.9</Version>
