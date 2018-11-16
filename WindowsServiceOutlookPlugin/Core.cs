@@ -123,26 +123,28 @@ namespace WindowsServiceOutlookPlugin
                     log.LogStandard(t.GetMethodName("Core"), "Settings read");
                     log.LogStandard(t.GetMethodName("Core"), "this.serviceLocation is " + this.serviceLocation);
 
-                    //Initialise Outlook API client's object
-                    //if (sqlController.SettingRead(Settings.calendarName) == "unittest")
-                    //{
-                    //    outlookOnlineController = new OutlookOnlineController_Fake(sqlController, log);
-                    //    log.LogStandard(t.GetMethodName("Core"), "OutlookController_Fake started");
-                    //}
-                    //else
-                    //{
-                    outlookExchangeOnlineAPI = new OutlookExchangeOnlineAPIClient(this.serviceLocation, log);
-                        log.LogStandard(t.GetMethodName("Core"), "OutlookController started");
-                    //}
+
+                    string directoryId = sqlController.SettingRead(Settings.dirId);
+                    if (string.IsNullOrEmpty(directoryId))
+                    {
+                        throw new ArgumentNullException("dirId in settings cannot be empty!");
+                    }
+                    string applicationId = sqlController.SettingRead(Settings.appId);
+                    if (string.IsNullOrEmpty(directoryId))
+                    {
+                        throw new ArgumentNullException("appId in setting cannot be empty!");
+                    }
+                    outlookExchangeOnlineAPI = new OutlookExchangeOnlineAPIClient(this.serviceLocation, log, directoryId, applicationId);
+
                     log.LogStandard(t.GetMethodName("Core"), "OutlookController started");
 
-                    log.LogCritical(t.GetMethodName("Core"), "started");
                     coreAvailable = true;
                     coreStatChanging = false;
 
                     //coreThread
                     string sdkCoreConnectionString = sqlController.SettingRead(Settings.microtingDb);
                     startSdkCoreSqlOnly(sdkCoreConnectionString);
+                    log.LogCritical(t.GetMethodName("Core"), "started");
 
                     container = new WindsorContainer();
                     container.Register(Component.For<SqlController>().Instance(sqlController));

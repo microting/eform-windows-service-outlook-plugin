@@ -26,19 +26,21 @@ namespace OutlookExchangeOnlineAPI
         string certPass = "123qweASDZXC";
 
 
-        public OutlookExchangeOnlineAPIClient(string serviceLocation, Log logger)
+        public OutlookExchangeOnlineAPIClient(string serviceLocation, Log logger, string directoryId, string applicationId)
         {
             // Set default endpoint
             log = logger;
             this.serviceLocation = serviceLocation;
             ApiEndpoint = "https://outlook.office.com/api/v2.0";
-            AccessToken = GetAppToken(GetServiceLocation() + certPath, certPass); //the pfx file is encrypted with this password
+            AccessToken = GetAppToken(GetServiceLocation() + certPath, certPass, directoryId, applicationId); //the pfx file is encrypted with this password
         }
 
-        public string GetAppToken(string certFile, string certPass)
+        public string GetAppToken(string certFile, string certPass, string directoryId, string applicationId)
         {
-            string directory_id = File.ReadAllText(GetServiceLocation() + @"cert\directory_id.txt").Trim();
-            application_id = File.ReadAllText(GetServiceLocation() + @"cert\application_id.txt").Trim();
+            //string directory_id = File.ReadAllText(GetServiceLocation() + @"cert\directory_id.txt").Trim();
+            string directory_id = directoryId;
+            //application_id = File.ReadAllText(GetServiceLocation() + @"cert\application_id.txt").Trim();
+            application_id = applicationId;
             X509Certificate2 cert = new X509Certificate2(certFile, certPass, X509KeyStorageFlags.MachineKeySet);
             AuthenticationContext authContext = new AuthenticationContext(authority.Replace("REPLACE_ME_GUID", directory_id));
             ClientAssertionCertificate assertion = new ClientAssertionCertificate(application_id, cert);
