@@ -35,11 +35,21 @@ namespace OutlookExchangeOnlineAPI
             AccessToken = GetAppToken(GetServiceLocation() + certPath, certPass, directoryId, applicationId); //the pfx file is encrypted with this password
         }
 
+        public string GetAppToken(string certFile, string certPass)
+        {
+            string directory_id = File.ReadAllText(GetServiceLocation() + @"cert\directory_id.txt").Trim();
+            application_id = File.ReadAllText(GetServiceLocation() + @"cert\application_id.txt").Trim();
+
+            //string directoryId = sqlController.SettingRead(Settings.dirId);
+            //string applicationId = sqlController.SettingRead(Settings.appId);
+
+            return GetAppToken(certFile, certPass, directory_id, application_id);
+
+        }
+
         public string GetAppToken(string certFile, string certPass, string directoryId, string applicationId)
         {
-            //string directory_id = File.ReadAllText(GetServiceLocation() + @"cert\directory_id.txt").Trim();
             string directory_id = directoryId;
-            //application_id = File.ReadAllText(GetServiceLocation() + @"cert\application_id.txt").Trim();
             application_id = applicationId;
             X509Certificate2 cert = new X509Certificate2(certFile, certPass, X509KeyStorageFlags.MachineKeySet);
             AuthenticationContext authContext = new AuthenticationContext(authority.Replace("REPLACE_ME_GUID", directory_id));
