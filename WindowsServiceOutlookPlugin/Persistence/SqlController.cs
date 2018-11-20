@@ -152,7 +152,7 @@ namespace OutlookSql
                     newAppo.title = appointment.Title;
                     newAppo.description = appointment.Description;
                     newAppo.color_rule = t.Bool(appointment.ColorRule);
-                    newAppo.workflow_state = "Created";
+                    newAppo.workflow_state = eFormShared.Constants.WorkflowStates.Created;
                     newAppo.created_at = DateTime.Now;
                     newAppo.updated_at = DateTime.Now;
                     newAppo.version = 1;
@@ -172,7 +172,7 @@ namespace OutlookSql
                         newAppoSite.processing_state = appSite.ProcessingState;
                         newAppoSite.sdk_case_id = null;
                         newAppoSite.version = 1;
-                        newAppoSite.workflow_state = "Created";
+                        newAppoSite.workflow_state = eFormShared.Constants.WorkflowStates.Created;
                         newAppoSite.created_at = DateTime.Now;
                         newAppoSite.updated_at = DateTime.Now;
                         newAppoSite.completed = 0;
@@ -182,6 +182,25 @@ namespace OutlookSql
 
                         db.appointment_site_versions.Add(MapAppointmentSiteVersions(newAppoSite));
                         db.SaveChanges();
+                    }
+
+                    foreach (AppointmentPrefillFieldValue appointmentPrefillFieldValue in appointment.AppointmentPrefillFieldValues)
+                    {
+                        appointment_prefill_field_values apfv = new appointment_prefill_field_values();
+                        apfv.appointment_id = newAppo.id;
+                        apfv.field_id = appointmentPrefillFieldValue.FieldId;
+                        apfv.field_value = appointmentPrefillFieldValue.FieldValue;
+                        apfv.workflow_state = eFormShared.Constants.WorkflowStates.Created;
+                        apfv.created_at = DateTime.Now;
+                        apfv.updated_at = DateTime.Now;
+                        apfv.version = 1;
+
+                        db.appointment_prefill_field_values.Add(apfv);
+                        db.SaveChanges();
+
+                        db.appointment_prefill_field_value_versions.Add(MapAppointmentPrefillFieldValueVersions(apfv));
+                        db.SaveChanges();
+
                     }
 
                     return newAppo.id;
@@ -252,7 +271,7 @@ namespace OutlookSql
 
                         foreach (appointment_prefill_field_values pfv in match.appointment_prefill_field_values)
                         {
-                            AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(pfv.field_id, pfv.field_value, match.id);
+                            AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(pfv.field_id, pfv.field_value);
                             appo.AppointmentPrefillFieldValues.Add(appointmentPrefillFieldValue);
                         }
                         return appo;
@@ -1306,8 +1325,23 @@ namespace OutlookSql
 
             return version;
         }
+
+        private appointment_prefill_field_value_versions MapAppointmentPrefillFieldValueVersions(appointment_prefill_field_values appointment_prefill_field_value)
+        {
+            appointment_prefill_field_value_versions version = new appointment_prefill_field_value_versions();
+
+            version.appointment_id = appointment_prefill_field_value.id;
+            version.field_id = appointment_prefill_field_value.field_id;
+            version.field_value = appointment_prefill_field_value.field_value;
+            version.version = appointment_prefill_field_value.version;
+            version.workflow_state = appointment_prefill_field_value.workflow_state;
+            version.created_at = appointment_prefill_field_value.created_at;
+            version.updated_at = appointment_prefill_field_value.updated_at;
+
+            return version;
+        }
         #endregion
-        
+
     }
 
     public enum Settings

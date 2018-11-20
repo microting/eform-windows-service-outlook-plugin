@@ -18,6 +18,8 @@ namespace OutlookSql
         public virtual DbSet<appointment_versions> appointment_versions { get; set; }
         public virtual DbSet<appointment_sites> appointment_sites { get; set; }
         public virtual DbSet<appointment_site_versions> appointment_site_versions { get; set; }
+        public virtual DbSet<appointment_prefill_field_values> appointment_prefill_field_values { get; set; }
+        public virtual DbSet<appointment_prefill_field_value_versions> appointment_prefill_field_value_versions { get; set; }
         public virtual DbSet<log_exceptions> log_exceptions { get; set; }
         public virtual DbSet<logs> logs { get; set; }
         public virtual DbSet<settings> settings { get; set; }

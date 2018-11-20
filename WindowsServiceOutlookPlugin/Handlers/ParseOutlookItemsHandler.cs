@@ -6,9 +6,9 @@ using eFormCore;
 using OutlookOfficeOnline;
 using OutlookSql;
 using System.Collections.Generic;
-using eFormShared;
 using OutlookExchangeOnlineAPI;
 using Rebus.Bus;
+using WindowsServiceOutlookPlugin;
 
 namespace Microting.OutlookAddon.Handlers
 {
@@ -16,7 +16,7 @@ namespace Microting.OutlookAddon.Handlers
     {
         private readonly SqlController sqlController;
         private readonly Log log;
-        private readonly Core sdkCore;
+        private readonly eFormCore.Core sdkCore;
         private readonly IOutlookOnlineController outlookOnlineController;
         Tools t = new Tools();
         OutlookExchangeOnlineAPIClient outlookExchangeOnlineAPIClient;
@@ -36,7 +36,7 @@ namespace Microting.OutlookAddon.Handlers
         DateTime tLimitFrom;// = checkLast_At.AddHours(-checkRetrace_Hours);
         #endregion
 
-        public ParseOutlookItemsHandler(SqlController sqlController, Log log, Core sdkCore, IOutlookOnlineController outlookOnlineController, OutlookExchangeOnlineAPIClient outlookExchangeOnlineAPIClient, IBus bus)
+        public ParseOutlookItemsHandler(SqlController sqlController, Log log, eFormCore.Core sdkCore, IOutlookOnlineController outlookOnlineController, OutlookExchangeOnlineAPIClient outlookExchangeOnlineAPIClient, IBus bus)
         {
             this.sqlController = sqlController;
             this.log = log;

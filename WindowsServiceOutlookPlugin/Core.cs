@@ -76,8 +76,8 @@ namespace WindowsServiceOutlookPlugin
         {
             try
             {
-
-                string connectionString = File.ReadAllText(serviceLocation +@"\Extensions\OutlookPlugin\sql_connection_outlook.txt").Trim();
+                string connectionStringPath = serviceLocation + @"\Extensions\OutlookPlugin\sql_connection_outlook.txt";
+                string connectionString = File.ReadAllText(connectionStringPath).Trim();
                 if (!coreAvailable && !coreStatChanging)
                 {
                     this.serviceLocation = serviceLocation;

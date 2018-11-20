@@ -54,6 +54,7 @@ namespace OutlookSql
 
             TemplateId = -1;
             AppointmentSites = new List<AppoinntmentSite>();
+            AppointmentPrefillFieldValues = new List<AppointmentPrefillFieldValue>();
             Connected = false;
             Title = "";
             Description = "";
@@ -142,7 +143,7 @@ namespace OutlookSql
                 string input = line.ToLower();
                 if (input.Trim() == "")
                     continue;
-                if (input.Contains(searchKey))
+                if (input.Contains(searchKey.ToLower()))
                 {
                     // Extracts the content to the right of the searchkey.
                     string itemStr = line.Remove(0, searchKey.Length).Trim();
@@ -165,7 +166,7 @@ namespace OutlookSql
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(fieldDto.Id, value, (int)Id);
+                    AppointmentPrefillFieldValue appointmentPrefillFieldValue = new AppointmentPrefillFieldValue(fieldDto.Id, value);
                     AppointmentPrefillFieldValues.Add(appointmentPrefillFieldValue);
                 }
             }

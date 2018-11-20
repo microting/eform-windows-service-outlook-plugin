@@ -16,11 +16,10 @@ namespace OutlookSql
 
         #endregion
 
-        public AppointmentPrefillFieldValue(int field_id, string field_value, int appointment_id)
+        public AppointmentPrefillFieldValue(int field_id, string field_value)
         {
             FieldId = field_id;
             FieldValue = field_value;
-            AppointmentId = appointment_id;
         }
     }
 }

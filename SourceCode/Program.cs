@@ -61,7 +61,11 @@ namespace SourceCode
         {
             string certsFolder = Path.Combine(GetServiceLocation(), "cert");
             Directory.CreateDirectory(certsFolder);
-            CertHelper.GenerateSelfSignedCert(GetServiceLocation().Split('\\').Last(), "key.cer", "cert.pfx", certsFolder);
+            string filePath = certsFolder + "\\key.cer";
+            if (!File.Exists(filePath))
+            {
+                CertHelper.GenerateSelfSignedCert(GetServiceLocation().Split('\\').Last(), "key.cer", "cert.pfx", certsFolder);
+            }
         }
     }
 }

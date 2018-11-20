@@ -7,7 +7,7 @@ using eFormCore;
 using OutlookOfficeOnline;
 using OutlookSql;
 using System.Collections.Generic;
-using eFormShared;
+using WindowsServiceOutlookPlugin;
 
 namespace Microting.OutlookAddon.Handlers
 {
@@ -15,10 +15,10 @@ namespace Microting.OutlookAddon.Handlers
     {
         private readonly SqlController sqlController;
         private readonly Log log;
-        private readonly Core sdkCore;
+        private readonly eFormCore.Core sdkCore;
         private readonly IOutlookOnlineController outlookOnlineController;
 
-        public AppointmentCreatedInOutlookHandler(SqlController sqlController, Log log, Core sdkCore, IOutlookOnlineController outlookOnlineController)
+        public AppointmentCreatedInOutlookHandler(SqlController sqlController, Log log, eFormCore.Core sdkCore, IOutlookOnlineController outlookOnlineController)
         {
             this.sqlController = sqlController;
             this.log = log;
@@ -69,6 +69,20 @@ namespace Microting.OutlookAddon.Handlers
                 if (Appo.AppointmentPrefillFieldValues.Count > 0)
                 {
                     SetDefaultValue(mainElement.ElementList, Appo.AppointmentPrefillFieldValues);
+                    string description = "";
+                    foreach (AppointmentPrefillFieldValue pfv in Appo.AppointmentPrefillFieldValues)
+                    {
+                        eFormData.Field field = sdkCore.Advanced_FieldRead(pfv.FieldId);
+                        string fieldValue = pfv.FieldValue;
+                        if (field.FieldType == eFormShared.Constants.FieldTypes.EntitySelect)
+                        {
+                            fieldValue = sdkCore.EntityItemReadByMicrotingUUID(pfv.FieldValue).Name;
+                        }
+                            description = description + "<b>" + field.Label + ":</b> " + fieldValue + "<br>";
+                    }
+                    eFormShared.CDataValue cDataValue = new eFormShared.CDataValue();
+                    cDataValue.InderValue = description;
+                    mainElement.ElementList[0].Description = cDataValue;
                 }
                 #endregion
 
@@ -200,7 +214,7 @@ namespace Microting.OutlookAddon.Handlers
                             {
                                 if (fv.FieldId == item.Id)
                                 {
-                                    CDataValue cDataValue = new CDataValue();
+                                    eFormShared.CDataValue cDataValue = new eFormShared.CDataValue();
                                     cDataValue.InderValue = fv.FieldValue;
                                     text.Description = cDataValue;
                                 }
